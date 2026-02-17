@@ -1,63 +1,82 @@
-/**
- * API Configuration for Research Hub AI
- * Axios instance with interceptors for authentication
- */
+import axios from "axios";
 
-import axios from 'axios';
+/*
+|--------------------------------------------------------------------------
+| Axios Instance
+|--------------------------------------------------------------------------
+| Centralized API configuration for the entire app
+| Handles:
+| - Base URL
+| - Auth token injection
+| - Global error handling
+| - Auto logout on 401
+|--------------------------------------------------------------------------
+*/
 
-// Create axios instance with base configuration
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_URL || "http://127.0.0.1:8000",
+  timeout: 15000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-  timeout: 10000, // 10 second timeout
 });
 
-// Request interceptor - Add auth token to requests
+/*
+|--------------------------------------------------------------------------
+| Request Interceptor
+|--------------------------------------------------------------------------
+| Automatically attach JWT token to every request
+|--------------------------------------------------------------------------
+*/
 API.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
-    const tokenType = localStorage.getItem('token_type') || 'bearer';
-    
+    const token = localStorage.getItem("token");
+
     if (token) {
-      config.headers.Authorization = `${tokenType} ${token}`;
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor - Handle errors globally
+/*
+|--------------------------------------------------------------------------
+| Response Interceptor
+|--------------------------------------------------------------------------
+| Handles:
+| - 401 → Auto logout
+| - 403 → Permission error
+| - Network failures
+|--------------------------------------------------------------------------
+*/
 API.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    // Handle 401 Unauthorized - redirect to login
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('token_type');
-      
-      // Only redirect if not already on login/register pages
-      if (!window.location.pathname.match(/^\/(login|register)/)) {
-        window.location.href = '/login';
+    const status = error.response?.status;
+
+    // 🔐 Unauthorized → Token invalid or expired
+    if (status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("token_type");
+
+      if (!window.location.pathname.includes("/login")) {
+        window.location.href = "/login";
       }
     }
-    
-    // Handle 403 Forbidden
-    if (error.response?.status === 403) {
-      console.error('Access forbidden:', error.response.data);
+
+    // 🚫 Forbidden
+    if (status === 403) {
+      console.error("Access forbidden:", error.response?.data);
     }
-    
-    // Handle network errors
+
+    // 🌐 Network error
     if (!error.response) {
-      console.error('Network error - please check your connection');
+      console.error("Network error. Check backend server.");
     }
-    
+
     return Promise.reject(error);
   }
 );

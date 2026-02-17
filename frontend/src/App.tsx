@@ -5,8 +5,8 @@ import Login from "./pages/login";
 import Home from "./pages/home";
 import Dashboard from "./pages/dashboard";
 import SearchPapers from "./pages/searchpapers";
-import AI from "./pages/AI";
 import Register from "./pages/register";
+import UploadPDF from "./pages/uploadfiles";
 
 
 
@@ -20,8 +20,9 @@ function AnimatedRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/searchpapers" element={<SearchPapers />} />
-        <Route path="/ai" element={<AI />} />
+        <Route path="/search" element={<SearchPapers />} />
+        <Route path="/upload" element={<UploadPDF />} />
+    
       </Routes>
     </AnimatePresence>
   );
