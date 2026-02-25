@@ -29,10 +29,10 @@ function Sidebar({ active }: { active: string }) {
   const navigate = useNavigate();
 
   const nav: NavItem[] = [
-    { icon: "🏠", label: "Home",          id: "home",      path: "/" },
+    { icon: "🏠", label: "Home",          id: "home",      path: "/home" },
     { icon: "📊", label: "Dashboard",     id: "dashboard", path: "/dashboard" },
     { icon: "🔍", label: "Search Papers", id: "search",    path: "/search" },
-    { icon: "🤖", label: "AI Tools",      id: "ai",        path: "/ai-tools" },
+    { icon: "🤖", label: "AI Tools",      id: "ai",        path: "/AI" },
     { icon: "📄", label: "Upload PDF",    id: "upload",    path: "/upload" },
     { icon: "📁", label: "DocSpace",      id: "doc",       path: "/docspace" },
   ];
